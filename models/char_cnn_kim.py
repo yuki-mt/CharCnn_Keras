@@ -98,7 +98,7 @@ class CharCNNKim(object):
         """
         # Create callbacks
         tensorboard = TensorBoard(log_dir='./logs', histogram_freq=checkpoint_every, batch_size=batch_size,
-                                  write_graph=False, write_grads=True, write_images=False,
+                                  write_graph=True, write_grads=True, write_images=True,
                                   embeddings_freq=checkpoint_every,
                                   embeddings_layer_names=None)
         # Start training
