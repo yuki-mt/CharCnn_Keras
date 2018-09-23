@@ -1,12 +1,13 @@
-from keras.models import Model
-from keras.layers import Input, Dense, Flatten
-from keras.layers import Convolution1D
-from keras.layers import Embedding
-from keras.layers import Activation
-from keras.layers import BatchNormalization
-from keras.layers import SpatialDropout1D
-from keras.layers import Dropout
-from keras.callbacks import TensorBoard
+from tensorflow.contrib.keras.python.keras.models import Model
+from tensorflow.contrib.keras.python.keras.layers import Input, Dense, Flatten
+from tensorflow.contrib.keras.python.keras.layers import Convolution1D
+from tensorflow.contrib.keras.python.keras.layers import Embedding
+from tensorflow.contrib.keras.python.keras.layers import Activation
+from tensorflow.contrib.keras.python.keras.layers import BatchNormalization
+from tensorflow.contrib.keras.python.keras.layers import SpatialDropout1D
+from tensorflow.contrib.keras.python.keras.layers import Dropout
+from tensorflow.contrib.keras.python.keras.callbacks import TensorBoard
+import numpy as np
 
 
 class CharTCN(object):

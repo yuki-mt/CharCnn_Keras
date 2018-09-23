@@ -1,11 +1,11 @@
-from keras.models import Model
-from keras.layers import Input, Dense, Flatten
-from keras.layers import Convolution1D
-from keras.layers import MaxPooling1D
-from keras.layers import Embedding
-from keras.layers import ThresholdedReLU
-from keras.layers import Dropout
-from keras.callbacks import TensorBoard
+from tensorflow.contrib.keras.python.keras.models import Model
+from tensorflow.contrib.keras.python.keras.layers import Input, Dense, Flatten
+from tensorflow.contrib.keras.python.keras.layers import Convolution1D
+from tensorflow.contrib.keras.python.keras.layers import MaxPooling1D
+from tensorflow.contrib.keras.python.keras.layers import Embedding
+from tensorflow.contrib.keras.python.keras.layers import ThresholdedReLU
+from tensorflow.contrib.keras.python.keras.layers import Dropout
+from tensorflow.contrib.keras.python.keras.callbacks import TensorBoard
 
 
 class CharCNNZhang(object):
