@@ -4,10 +4,11 @@ from keras.layers import Convolution1D
 from keras.layers import GlobalMaxPooling1D
 from keras.layers import Embedding
 from keras.layers import AlphaDropout
-from keras.callbacks import TensorBoard
+
+from models.char_cnn_model import CharCNNModel
 
 
-class CharCNNKim(object):
+class CharCNNKim(CharCNNModel):
     """
     Class to implement the Character Level Convolutional Neural Network
     as described in Kim et al., 2015 (https://arxiv.org/abs/1508.06615)
@@ -40,11 +41,9 @@ class CharCNNKim(object):
         self.fully_connected_layers = fully_connected_layers
         self.num_of_classes = num_of_classes
         self.dropout_p = dropout_p
-        self.optimizer = optimizer
-        self.loss = loss
-        self._build_model()  # builds self.model variable
+        super().__init__(optimizer, loss)
 
-    def _build_model(self):
+    def _get_model(self):
         """
         Build and compile the Character Level CNN model
 
@@ -54,7 +53,9 @@ class CharCNNKim(object):
         # Input layer
         inputs = Input(shape=(self.input_size,), name='sent_input', dtype='int64')
         # Embedding layers
-        x = Embedding(self.alphabet_size + 1, self.embedding_size, input_length=self.input_size)(inputs)
+        x = Embedding(self.alphabet_size + 1,
+                      self.embedding_size,
+                      input_length=self.input_size)(inputs)
         # Convolution layers
         convolution_output = []
         for num_filters, filter_width in self.conv_layers:
@@ -62,7 +63,8 @@ class CharCNNKim(object):
                                  kernel_size=filter_width,
                                  activation='tanh',
                                  name='Conv1D_{}_{}'.format(num_filters, filter_width))(x)
-            pool = GlobalMaxPooling1D(name='MaxPoolingOverTime_{}_{}'.format(num_filters, filter_width))(conv)
+            pool = GlobalMaxPooling1D(
+                name='MaxPoolingOverTime_{}_{}'.format(num_filters, filter_width))(conv)
             convolution_output.append(pool)
         x = Concatenate()(convolution_output)
         # Fully connected layers
@@ -71,57 +73,6 @@ class CharCNNKim(object):
             x = AlphaDropout(self.dropout_p)(x)
         # Output layer
         predictions = Dense(self.num_of_classes, activation='softmax')(x)
-        # Build and compile model
-        model = Model(inputs=inputs, outputs=predictions)
-        model.compile(optimizer=self.optimizer, loss=self.loss)
-        self.model = model
+
         print("CharCNNKim model built: ")
-        self.model.summary()
-
-    def train(self, training_inputs, training_labels,
-              validation_inputs, validation_labels,
-              epochs, batch_size, checkpoint_every=100):
-        """
-        Training function
-
-        Args:
-            training_inputs (numpy.ndarray): Training set inputs
-            training_labels (numpy.ndarray): Training set labels
-            validation_inputs (numpy.ndarray): Validation set inputs
-            validation_labels (numpy.ndarray): Validation set labels
-            epochs (int): Number of training epochs
-            batch_size (int): Batch size
-            checkpoint_every (int): Interval for logging to Tensorboard
-
-        Returns: None
-
-        """
-        # Create callbacks
-        tensorboard = TensorBoard(log_dir='./logs', histogram_freq=checkpoint_every, batch_size=batch_size,
-                                  write_graph=True, write_grads=True, write_images=True,
-                                  embeddings_freq=checkpoint_every,
-                                  embeddings_layer_names=None)
-        # Start training
-        print("Training CharCNNKim model: ")
-        self.model.fit(training_inputs, training_labels,
-                       validation_data=(validation_inputs, validation_labels),
-                       epochs=epochs,
-                       batch_size=batch_size,
-                       verbose=2,
-                       callbacks=[tensorboard])
-
-    def test(self, testing_inputs, testing_labels, batch_size):
-        """
-        Testing function
-
-        Args:
-            testing_inputs (numpy.ndarray): Testing set inputs
-            testing_labels (numpy.ndarray): Testing set labels
-            batch_size (int): Batch size
-
-        Returns: None
-
-        """
-        # Evaluate inputs
-        self.model.evaluate(testing_inputs, testing_labels, batch_size=batch_size, verbose=1)
-        # self.model.predict(testing_inputs, batch_size=batch_size, verbose=1)
+        return Model(inputs=inputs, outputs=predictions)
