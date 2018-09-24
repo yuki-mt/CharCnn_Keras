@@ -1,5 +1,7 @@
-from keras.callbacks import TensorBoard
+from keras.callbacks import TensorBoard, EarlyStopping, ModelCheckpoint
+from keras.models import model_from_json
 from abc import ABCMeta, abstractmethod
+import os
 
 
 class CharCNNModel(metaclass=ABCMeta):
@@ -55,6 +57,16 @@ class CharCNNModel(metaclass=ABCMeta):
                                   write_images=True,
                                   embeddings_freq=checkpoint_every,
                                   embeddings_layer_names=None)
+
+        es = EarlyStopping(monitor='val_loss', patience=0, verbose=1, mode='auto')
+
+        dirname = 'data/models'
+        filename = 'char_cnn.{epoch:02d}-{val_loss:.2f}.hdf5'
+        cp_cb = ModelCheckpoint(filepath=os.path.join(dirname, filename),
+                                monitor='val_loss',
+                                verbose=1,
+                                save_best_only=True,
+                                mode='auto')
         # Start training
         print("Training model: ")
         self.model.fit(training_inputs, training_labels,
@@ -62,7 +74,26 @@ class CharCNNModel(metaclass=ABCMeta):
                        epochs=epochs,
                        batch_size=batch_size,
                        verbose=2,
-                       callbacks=[tensorboard])
+                       callbacks=[tensorboard, es, cp_cb])
+        self.load_best_weight(dirname)
+
+    def load_best_weight(self, dirname):
+        from glob import glob
+        target = os.path.join(dirname, '*')
+        files = [(f, os.path.getmtime(f)) for f in glob(target)]
+        if len(files) != 0:
+            newest_model = sorted(files, key=lambda files: files[1])[-1]
+            self.model.load_weights(newest_model[0])
+
+    def save(self, dirname):
+        base_name = os.path.join(dirname, self.__class__.__name__)
+        self.model.save_weights(base_name + '_param.hdf5')
+        open(base_name + '_model.json', 'w').write(self.model.to_json())
+
+    def load(self, dirname):
+        base_name = os.path.join(dirname, self.__class__.__name__)
+        self.model = model_from_json(base_name + '_model.json')
+        self.model.load_weights(base_name + '_param.hdf5')
 
     def test(self, testing_inputs, testing_labels, batch_size):
         """
