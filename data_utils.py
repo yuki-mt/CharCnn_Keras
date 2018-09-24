@@ -70,7 +70,7 @@ class Data(object):
     def str_to_indexes(self, s):
         """
         Convert a string to character indexes based on character dictionary.
-        
+
         Args:
             s (str): String to be converted to indexes
 
