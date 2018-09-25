@@ -16,9 +16,9 @@ class CharCNNKim(CharCNNModel):
     Their model has been adapted to perform text classification instead of language modelling
     by replacing subsequent recurrent layers with dense layer(s) to perform softmax over classes.
     """
-    def __init__(self, input_size, alphabet_size, embedding_size,
-                 conv_layers, fully_connected_layers,
-                 num_of_classes, dropout_p,
+    def __init__(self, input_size=None, alphabet_size=None, embedding_size=None,
+                 conv_layers=None, fully_connected_layers=None,
+                 num_of_classes=None, dropout_p=None, model_dir=None,
                  optimizer='adam', loss='categorical_crossentropy'):
         """
         Initialization for the Character Level CNN model.
@@ -41,7 +41,7 @@ class CharCNNKim(CharCNNModel):
         self.fully_connected_layers = fully_connected_layers
         self.num_of_classes = num_of_classes
         self.dropout_p = dropout_p
-        super().__init__(optimizer, loss)
+        super().__init__(optimizer, loss, model_dir)
 
     def _get_model(self):
         """

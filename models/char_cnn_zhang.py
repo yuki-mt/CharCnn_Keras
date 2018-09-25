@@ -14,9 +14,9 @@ class CharCNNZhang(CharCNNModel):
     Class to implement the Character Level Convolutional Neural Network for Text Classification,
     as described in Zhang et al., 2015 (http://arxiv.org/abs/1509.01626)
     """
-    def __init__(self, input_size, alphabet_size, embedding_size,
-                 conv_layers, fully_connected_layers, num_of_classes,
-                 threshold, dropout_p,
+    def __init__(self, input_size=None, alphabet_size=None, embedding_size=None,
+                 conv_layers=None, fully_connected_layers=None, num_of_classes=None,
+                 threshold=None, dropout_p=None, model_dir=None,
                  optimizer='adam', loss='categorical_crossentropy'):
         """
         Initialization for the Character Level CNN model.
@@ -41,7 +41,7 @@ class CharCNNZhang(CharCNNModel):
         self.num_of_classes = num_of_classes
         self.threshold = threshold
         self.dropout_p = dropout_p
-        super().__init__(optimizer, loss)
+        super().__init__(optimizer, loss, model_dir)
 
     def _get_model(self):
         """
